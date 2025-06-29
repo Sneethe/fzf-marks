@@ -196,10 +196,12 @@ function dmark {
 zle -N dmark
 zle -N fzm
 
-bindkey ${FZF_MARKS_JUMP:-'^g'} fzm
-if [ "${FZF_MARKS_DMARK-}" ]; then
-    bindkey ${FZF_MARKS_DMARK} dmark
-fi
+# bindkey ${FZF_MARKS_JUMP:-'^g'} fzm
+# if [ "${FZF_MARKS_DMARK-}" ]; then
+#     bindkey ${FZF_MARKS_DMARK} dmark
+# fi
+bindkey -M vicmd '\' fzm
+bindkey -M viins "^[\'" fzm
 
 command -v compdef >/dev/null 2>&1 || return
 # Completion: for documentation, see e.g.
