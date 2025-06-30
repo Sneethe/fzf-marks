@@ -21,7 +21,11 @@
 command -v fzf >/dev/null 2>&1 || return
 
 if [[ -z ${FZF_MARKS_FILE-} ]] ; then
-    FZF_MARKS_FILE=$HOME/.fzf-marks
+  if [[ -f "$ZDOTDIR[1,-4]/files" ]] ; then
+    FZF_MARKS_FILE="$ZDOTDIR[1,-4]/files"
+  else
+    FZF_MARKS_FILE="$ZDOTDIR/.fzf-marks"
+  fi
 fi
 
 if [[ ! -f $FZF_MARKS_FILE ]]; then
@@ -209,7 +213,7 @@ command -v compdef >/dev/null 2>&1 || return
 # https://github.com/zsh-users/zsh-completions/blob/master/zsh-completions-howto.org#user-content-actions
 function _fzm {
     _arguments -C \
-        "1: :(($(sed "s/\\(.*\\) : \\(.*\\)/'\1'\\\\:'\2'/" < "$FZF_MARKS_FILE")))" \
+        "1: :(($(sed "s/\\(.*\\) : \\(.*\\)/'\1'\\\\:'\2'/" < "$FZF_MARKS_FILE")))"
 }
 
 compdef _fzm fzm
