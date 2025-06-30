@@ -21,7 +21,7 @@
 command -v fzf >/dev/null 2>&1 || return
 
 if [[ -z ${FZF_MARKS_FILE-} ]] ; then
-    FZF_MARKS_FILE=$HOME/.fzf-marks
+    FZF_MARKS_FILE="$ZDOTDIR/.fzf-marks"
 fi
 
 if [[ ! -f $FZF_MARKS_FILE ]]; then
