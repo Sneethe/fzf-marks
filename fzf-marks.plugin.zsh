@@ -144,14 +144,8 @@ function jump {
         bookmarks=$(_fzm_handle_symlinks)
         cd "${jumpdir}" || return
         if [[ ! "${FZF_MARKS_KEEP_ORDER}" == 1 && -w ${FZF_MARKS_FILE} ]]; then
-          local line lines=()
-          while IFS= read -r line; do
-            [[ $line == $jumpline ]] || lines+=("$line")
-          done < "$bookmarks"
-          : > "$bookmarks"
-          for line in "${lines[@]}"; do
-            print -r -- "$line" >> "$bookmarks"
-          done
+            command grep -vxF "$jumpline" "$bookmarks" > "$bookmarks.tmp"
+            command mv "$bookmarks.tmp" "$bookmarks"
             printf '%s\n' "${jumpline}" >> "${FZF_MARKS_FILE}"
         fi
     fi
@@ -188,27 +182,15 @@ function dmark {
     bookmarks=$(_fzm_handle_symlinks)
 
     if [[ -n ${marks_to_delete} ]]; then
-          typeset -A delete_map
-          for del in "${(f)marks_to_delete[@]}"; do
-            delete_map[$del]=1
-          done
+          command grep -vxF "$marks_to_delete" "$bookmarks" > "$bookmarks.tmp"
+          command mv "$bookmarks.tmp" "$bookmarks"
 
-          typeset -a filtered_lines
-          while IFS= read -r line; do
-            if [[ -z ${delete_map[$line]} ]]; then
-              filtered_lines+=("$line")
-            fi
-          done < "$bookmarks"
-
-          : > "$bookmarks"
-          for line in "${filtered_lines[@]}"; do
-            print -r -- "$line" >> "$bookmarks"
-          done
           if [[ $(wc -l <<< "${marks_to_delete}") == 1 ]] ;then
-            echo "** The following mark has been deleted **"
-            else echo "** The following marks have been deleted **"
+              echo "** The following mark has been deleted **"
+            else
+              echo "** The following marks have been deleted **"
           fi
-        _fzm_color_marks <<< "${marks_to_delete}"
+          _fzm_color_marks <<< "${marks_to_delete}"
         echo "\n"
     fi
     zle && zle reset-prompt
